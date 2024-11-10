@@ -1,0 +1,22 @@
+//See hardwarelist.txt for details on this file format.
+//Version|Manufacturer|Model|Comment|MapsTo|PlugInDllName
+1|Mallincam|SkyRaider|SkyRaider AG1.2c| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS287c| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS287m| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS2.3 PLUS| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS432m TEC| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS432c TEC| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS10cTEC| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS16m| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider Guiderm| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider (Test)| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS16c TEC| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS24c TEC| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS26m TEC| |libMallincamX2
+1|Mallincam|SkyRaider|SkyRaider DS26c TEC| |libMallincamX2
+1|Mallincam|Xtreme|Xtreme ICX418c| |libMallincamX2
+1|Mallincam|Xtreme|Xtreme EX ICX428c| |libMallincamX2
+1|Mallincam|Xtreme|Xtreme ICX418m| |libMallincamX2
+1|Mallincam|Xtreme|Xtreme EX ICX428m| |libMallincamX2
+1|Mallincam|Xterminator|Xterminator II c| |libMallincamX2
+1|Mallincam|Xterminator|Xterminator II m| |libMallincamX2

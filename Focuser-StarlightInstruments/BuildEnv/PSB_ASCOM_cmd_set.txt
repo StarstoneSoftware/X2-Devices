@@ -1,0 +1,210 @@
+PerfectStar B Command Codes and Responses:
+
+
+Set motor/position state:
+Set motor state: (before changing motor state, use 'set/get position' command)
+	Byte 0: 0x10
+	Byte 1: State (0='no op', 1='in', 2='out', 3='goto', 4='set position', 5='set max position', 0xff='halt')
+Response:
+	Byte 0: 0x10
+	Byte 1: Result (0 = OK, 0xff = invalid state change)
+	Byte 2: State (0='no op', 1='in', 2='out', 3='goto', 4='set position', 5='set max position', 0xff='halt')
+
+Get motor state:
+	Byte 0: 0x11
+Response:
+	Byte 0: 0x11
+	Byte 1: State (0='not moving', 1='moving in', 2='moving out',5 = 'locked')
+
+NOTE: All operations that affect the position value are used by setting the position (or offset) value first, then sending one of the above commands. Motor status of 1 or 2 will be set immediately when a valid MOVE command is received, stays set when the move starts, and remains set until the move is complete. Thus, the proper interpretation of these states is that a move is either active or pending. After sending a MOVE command the host can poll the status to determine when the move is done. However, these states will also be active for moves initiated through the handset or via temperature compensation. 'Set position' forces the internal position to the specified value. 'Set max position' sets the maximum allowed position.
+
+Set position/offset (lower 16 bits):
+	Byte 0: 0x20
+	Byte 1: offset/position, low byte
+	Byte 2: offset/position, high byte (unsigned)
+Response:
+	Byte 0: 0x20
+	Byte 1: offset/position, low byte
+	Byte 2: offset/position, high byte (unsigned)
+
+Get position/offset (lower 16 bits):
+	Byte 0: 0x21
+Response:
+	Byte 0: 0x21
+	Byte 1: offset/position, low byte
+	Byte 2: offset/position, high byte (unsigned)
+
+Set position/offset (high 4 bits):
+	Byte 0: 0x28
+	Byte 1: high byte of position (0-15)
+Response:
+	Byte 0: 0x28
+	Byte 1: high byte of position (0-15)
+
+Get position/offset (high 4 bits):
+	Byte 0: 0x29
+Response:
+	Byte 0: 0x29
+	Byte 1: high byte of position (0-15)
+
+NOTE: PerfectStar uses a 20 bit (unsigned) value for position/offset, providing a range of >1 million steps. When reading the position, read the high part first (if used). This will cause the low bytes to be frozen so that the entire position is taken from a single point in time. Reading the low bytes alone may not yield accurate information. To execute a 'move', set the high bits of the offset or absolute position first.
+
+
+Set/Get parameters:
+Set step period:
+	Byte 0: 0x30
+	Byte 1: Step period (ms, 0 to 100)
+Response:
+	Byte 0: 0x30
+	Byte 1: Step period (ms, 0 to 100)
+
+Get step period:
+	Byte 0: 0x31
+Response:
+	Byte 0: 0x31
+	Byte 1: Step period (ms, 0 to 100)
+
+NOTE: In PSB (unlike original PS) the step period cannot be set to any arbitrary value by the host. Instead, a value less than 12 selects the "fast" rate (optimize for speed), while a value of 12 or greater selects normal speed (optimize for torque).
+
+
+Set Backlash compensation:
+	Byte 0: 0x32
+	Byte 1: Backlash (steps, 0 to 255)
+	Byte 2: Preferred direction (0='in', 1='out')
+Response:
+	Byte 0: 0x32
+	Byte 1: Backlash (steps, 0 to 255)
+	Byte 2: Preferred direction (0='in', 1='out')
+
+Get Backlash compensation:
+	Byte 0: 0x33
+Response:
+	Byte 0: 0x33
+	Byte 1: Backlash (steps, 0 to 255)
+	Byte 2: Preferred direction (0='in', 1='out')
+
+Set Temperature hysteresis:
+	Byte 0: 0x34
+	Byte 1: Temp. hysteresis (0 to 255 -> 0.0 to 25.5 degrees C)
+Response:
+	Byte 0: 0x34
+	Byte 1: Temp. hysteresis (0 to 255 -> 0.0 to 25.5 degrees C)
+
+Get Temperature hysteresis:
+	Byte 0: 0x35
+Response:
+	Byte 0: 0x35
+	Byte 1: Temp. hysteresis (0 to 255 -> 0.0 to 25.5 degrees C)
+
+NOTE: "Hysteresis" defines the minimum temperature change before TC is activated.
+
+
+Set Temperature coefficient (steps per 1 degree C, fixed 8.8 format)
+	Byte 0: 0x36
+	Byte 1: Temp. coefficient (low byte [fration] of signed 16 bit int)
+	Byte 2: Temp. coefficient (high byte [integer] of signed 16 bit int)
+Response:
+	Byte 0: 0x36
+	Byte 1: Temp. coefficient (low byte of signed 16 bit int)
+	Byte 2: Temp. coefficient (high byte of signed 16 bit int)
+
+Get Temperature coefficient (steps per 1 degree C)
+	Byte 0: 0x37
+Response:
+	Byte 0: 0x37
+	Byte 1: Temp. coefficient (low byte of signed 16 bit int)
+	Byte 2: Temp. coefficient (high byte of signed 16 bit int)
+
+Set Temp Comp enable/disable:
+	Byte 0: 0x38
+	Byte 1: 0 to disable, 0xff to enable
+Response:
+	Byte 0: 0x38
+	Byte 1: 0 to disable, 0xff to enable
+
+Get Temp Comp enable/disable:
+	Byte 0: 0x39
+Response:
+	Byte 0: 0x39
+	Byte 1: 0 is disabled, 0xff is enabled
+
+Set Motor Off On Idle:
+	Byte 0: 0x3a
+	Byte 1: 0 to disable (normal), 0xff to enable
+Response:
+	Byte 0: 0x3a
+	Byte 1: 0 to disable (normal), 0xff to enable
+
+Get Motor Off On Idle:
+	Byte 0: 0x3b
+Response:
+	Byte 0: 0x3b
+	Byte 1: 0 is disabled (normal), 0xff is enabled
+
+NOTE: "Motor off on idle" is a carryover from the older, unipolar motor version. In PSB, this parameter is used to determine the drive current when not moving (idle). There are 4 possible drive levels; the highest is used when the motor is moving (this value is optimized for FT motors and is not programmable). The "Off on Idle" parameter selects 1 of 2 possible levels for "not moving" (idle) state, which is a trade-off between braking strength (to hold the position) and power consumption. The 4th level is only available in shutdown/lock state, and completely disables the motor driver. To set the idle (braking) current to "high" (optimize braking strength) byte 1 should be 0. For "low" (optimize for low power consumption) byte 1 should be 0xff.
+
+Request temperature report:
+	Byte 0: 0x41
+Response: (Temperature in degrees C * 256 OR 0x8000 if no sensor found)
+	Byte 0: 0x41
+	Byte 1: temp low byte
+	Byte 2: temp high byte
+
+Request firmware version:
+	Byte 0: 0x51
+Response:
+	Byte 0: 0x51
+	Byte 1: minor version (0 to 255)
+	Byte 2: major version (0 to 255)
+
+Set motor polarity:
+	Byte 0: 0x60
+	Byte 1: Motor polarity (0 = normal, else reverse)
+Response:
+	Byte 0: 0x60
+	Byte 1: Motor polarity (0 = normal, else reverse)
+
+Get motor polarity:
+	Byte 0: 0x61
+Response:
+	Byte 0: 0x61
+	Byte 1: Motor polarity (0 = normal, else reverse)
+
+Set handset knob polarity:
+	Byte 0: 0x62
+	Byte 1: Knob polarity (0 = normal, else reverse)
+Response:
+	Byte 0: 0x62
+	Byte 1: Knob polarity (0 = normal, else reverse)
+
+Get handset knob polarity:
+	Byte 0: 0x63
+Response:
+	Byte 0: 0x63
+	Byte 1: Knob  polarity (0 = normal, else reverse)
+
+NOTE: Most focus controllers provide a motor polarity switch, which controls the relationship between "in" versus "out" movement and the CW/CCW motion of the motor. Because PSB's handset has a rotary knob, there is also a selection for its CW/CCW relationship to "in/out". This is purely a user preference - which direction they think of as in or out.
+
+Save current position:
+	Byte 0: 0x70
+	Byte 1: 0xa5 (Saves current position in non-volatile memory)
+Response:
+	Byte 0: 0x70
+	Byte 1: 0xa5 (Confirms position saved)
+
+Set Motor Lock:
+	Byte 0: 0x72
+	Byte 1: 0xa5 = lock, 0x5a = unlock
+	Byte 2: Power level (0 = no braking, 1 = low power braking, 2 = same as normal)
+
+Response:
+	Byte 0: 0x72
+	Byte 1: 0xa5 or 0x5a if OK, 0xff if invalid argument
+
+Get Motor Lock:
+	Byte 0: 0x73
+Response:
+	Byte 0: 0x73
+	Byte 1: 0xa5 = locked, 0x5a = unlocked
+
+NOTE: Power level of 2 means that the level is determined by the "Motor Off on Idle" parameter, while "1" forces it to the low power level and "0" turns off the motor driver completely. If the controller is to be turned off, this doesn't make any difference. If it is left on while in shutdown/lock mode, selecting level 0 will greatly reduce the power consumption.
